@@ -483,28 +483,9 @@ Two methods are available, depending if publisher implements IAB safeFrames or n
 
 ### Via safeFrames <a name="safeframe"></a>
 
-safeFrame can be used to proxy calls to __cmp(). No changes are required for the CMP, apart from implementing the [proposed local API](#heading=h.m458abg1kvs4) above. An updated safeFrame implementation/specification will provide the method $sf.ext.cmp(command, parameter), where vendors can initiate the cmp request flow identically to calling __cmp() on the main page/frame. The only difference for the vendor is the callback argument not being necessary, since safeFrame already provides a callback mechanism. For the publisher, safeFrame will handle all the messaging and tracking of which iframe made the request.
+safeFrame can be used to proxy calls to __cmp(). No changes are required for the CMP, apart from implementing the [proposed local API](#heading=h.m458abg1kvs4) above. An updated safeFrame implementation will provide a namesake __cmp() method inside the safeframe sandbox, which will translate the asynchronous calls and responses to the frame containing the CMP's actual __cmp() method.
 
-Vendors already supporting safeFrames should add the following sample changes to their existing implementation:
- 
- ```
- function sf_callback(msgName, data){
-    // existing code that process other msgNames
-    if( msgName === 'cmpReturn' ){
-      vendor_process_cmp(
-
-          data.cmpCommand,// added by SF
-
-          data.VendorConsents, // values from __cmp original return
-
-          data.success
-
-      );
-    }
-  }
-  $sf.ext.register(300, 250, sf_callback);
-  $sf.ext.cmp('getVendorConsents');
-```
+Vendors can call __cmp() inside safeFrames as if they where on the main publisher frame itself, with no concerns for iframes problems mentioned bellow.
 
 
 ### Without safeFrames, using postMessage <a name="postmessage"></a>
